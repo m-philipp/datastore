@@ -3,17 +3,7 @@ import sys
 import time
 import MySQLdb
 import re
-
-
-a = "{1,3.1415,4.1415}"
-HOST = ''
-PORT = 10016
-#s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST, PORT))
-s.listen(4)
-clients = [] #list of clients connected
-lock = threading.Lock()
+import signal
 
 
 db = MySQLdb.connect (host = "localhost",
@@ -21,6 +11,24 @@ db = MySQLdb.connect (host = "localhost",
                         passwd = "",
                         db = "datastore")
 						
+
+
+HOST = ''
+PORT = 10020
+TIMEOUT = 3
+#s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST, PORT))
+s.listen(4)
+clients = [] #list of clients connected
+lock = threading.Lock()
+shutdown = 0
+
+
+def handleSigTERM():
+    shutdown = 1
+
+signal.signal(signal.SIGTERM, handleSigTERM)
 
 
 def getValues(line):
@@ -40,16 +48,16 @@ def getValues(line):
     approx_equal = lambda a, b, t: abs(a - b) < t
     
     if approx_equal(streamId + val, checkSum, 0.001):
-        print "got some good value"
+        # print "got some good value"
         return (streamId, val)
 
-    print "got some BAD value"
+    # print "got some BAD value"
     return None
 
 def store(streamId, value):
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
-    print "entering store method"
+    # print "entering store method"
 
     # Prepare SQL query to INSERT a record into the database.
     sql = "INSERT INTO store(streamId, \
@@ -66,7 +74,7 @@ def store(streamId, value):
     except:
        # Rollback in case there is any error
        db.rollback()
-       print "DB rollback cause of bad things happened"
+       # print "DB rollback cause of bad things happened"
 
   
 
@@ -75,31 +83,43 @@ class chatServer(threading.Thread):
         threading.Thread.__init__(self)
         self.socket = socket
         self.address= address
+        self.socket.settimeout(TIMEOUT)
 
     def run(self):
         lock.acquire()
         clients.append(self)
         lock.release()
         #print '%s:%s connected.' % self.address
-        print "connected"
+        #print "connected"
         while True:
-            data = self.socket.recv(1024)
+            data = None
+            try:
+                data = self.socket.recv(1024)
+            except:
+                if shutdown == 1:
+                    break
+                continue
+        
             if not data:
                 break
 
             v = getValues(data)
             if not None == v:
                 store(v[0], v[1])
-            sys.stdout.write(data)
+            # sys.stdout.write(data)
         self.socket.close()
         #print '%s:%s disconnected.' % self.address
-        print "disconnect"
+        #print "disconnect"
         lock.acquire()
         clients.remove(self)
         lock.release()
 
 while True: # wait for socket to connect
     # send socket to chatserver and start monitoring
+    if shutdown == 1:
+        break
     chatServer(s.accept()).start()
 
+
+s.close()
 
