@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import socket, threading
 import sys
 import time
@@ -8,7 +9,7 @@ import signal
 
 db = MySQLdb.connect (host = "localhost",
                         user = "root",
-                        passwd = "",
+                        passwd = "raspberry",
                         db = "datastore")
 						
 
