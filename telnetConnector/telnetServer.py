@@ -17,8 +17,8 @@ db = MySQLdb.connect (host = "localhost",
 HOST = ''
 PORT = 10020
 TIMEOUT = 3
-#s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(4)
 clients = [] #list of clients connected
@@ -33,8 +33,7 @@ signal.signal(signal.SIGTERM, handleSigTERM)
 
 
 def getValues(line):
-    r = re.compile('\{([0-9]+),(?:([0-9]+\.[0-9]+)|[0-9]+),(?:([0-9]+\.[0-9]+)|[0-9]+)\}')
-
+    r = re.compile('\{([0-9]+),((?:[0-9]+\.[0-9]+)|[0-9]+),((?:[0-9]+\.[0-9]+)|[0-9]+)\}')
     streamId = None
     val = None
     checkSum = None
