@@ -16,7 +16,7 @@ db = MySQLdb.connect (host = "localhost",
 
 HOST = ''
 PORT = 10020
-TIMEOUT = 3
+TIMEOUT = 300
 s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
@@ -40,7 +40,7 @@ def set_keepalive_linux(sock, after_idle_sec=1, interval_sec=5, max_fails=5):
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, max_fails)
 
 
-def handleSigTERM():
+def handleSigTERM(a, b):
     shutdown = 1
 
 signal.signal(signal.SIGTERM, handleSigTERM)
@@ -68,37 +68,55 @@ def getValues(line):
     # print "got some BAD value"
     return None
 
-def store(streamId, value):
+def store(streamId, value, timestamp):
+    print "store: StreamId=" + str(streamId) + " Value=" + str(value)
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
-    # print "entering store method"
+    #print "got db cursor"
 
     # Prepare SQL query to INSERT a record into the database.
     sql = "INSERT INTO store(streamId, \
            val, loggedTime) \
            VALUES ('%d', '%e', '%.6f' )" % \
-           (streamId, value, time.time())
+           (streamId, value, timestamp)
                
+    #print "set up sql query"
     try:
        # Execute the SQL command
        cursor.execute(sql)
+       #print "executed cursor"
        # Commit your changes in the database
        db.commit()
-       print "stored some values in DB"
+       #print "comitted db"
+       #print "stored some values in DB"
     except:
        # Rollback in case there is any error
        db.rollback()
+       #print "did db rollback"
        # print "DB rollback cause of bad things happened"
+    #print "leaving store function"
 
+class archiver(threading.Thread):
+    def __init__(self, valuesToStore):
+        threading.Thread.__init__(self)
+        self.valuesToStore = valuesToStore
   
+    def run(self):
+        while True:
+            if len(self.valuesToStore) > 0:
+                (rawLine, timestamp) = self.valuesToStore.pop()
+                v = getValues(rawLine)
+		if v:
+                    store(v[0], v[1], timestamp)
 
 class chatServer(threading.Thread):
-    def __init__(self, (socket,address)):
+    def __init__(self, (socket,address), valuesToStore):
         threading.Thread.__init__(self)
+        self.valuesToStore = valuesToStore
         self.socket = socket
         self.address= address
         self.socket.settimeout(TIMEOUT)
-	set_keepalive_linux(self.socket)
+	# set_keepalive_linux(self.socket)
 
     def run(self):
         lock.acquire()
@@ -107,6 +125,7 @@ class chatServer(threading.Thread):
         #print '%s:%s connected.' % self.address
         #print "connected"
         while True:
+            #sys.stdout.write('.')
             data = None
             try:
                 data = self.socket.recv(1024)
@@ -116,12 +135,16 @@ class chatServer(threading.Thread):
                 continue
         
             if not data:
-                break
+                continue
+            #print "#############################"
+            #sys.stdout.write(data)
+            #print "#############################"
+            data = data.split( )
+            for d in data:
+                #print "--------------------------------"		
+                #print d
+                self.valuesToStore.append((d, time.time()))
 
-            v = getValues(data)
-            if not None == v:
-                store(v[0], v[1])
-            # sys.stdout.write(data)
         self.socket.close()
         #print '%s:%s disconnected.' % self.address
         #print "disconnect"
@@ -129,12 +152,14 @@ class chatServer(threading.Thread):
         clients.remove(self)
         lock.release()
 
+x = list()
+archiver(x).start()
+
 while True: # wait for socket to connect
     # send socket to chatserver and start monitoring
     if shutdown == 1:
         break
-    chatServer(s.accept()).start()
-
+    chatServer(s.accept(), x).start()
 
 s.close()
 
