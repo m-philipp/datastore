@@ -73,7 +73,7 @@ class Route
 	{
 
 
-		$result = getDatabase()->all('SELECT DISTINCT streamId FROM store');
+		$result = getDatabase()->all('SELECT DISTINCT streamId FROM store ORDER BY streamId ASC');
 
 		$streams = array();
 		foreach($result as $val){
