@@ -13,8 +13,8 @@ If you're running this Tool on an nginx Server, you have to place the following 
  ```
 
 
-Make you own TelnetServer Service
-=================================
+Make your own TelnetServer Service
+==================================
 
 If you want the Telnet connector to run as a Servive you can use the provided Shell Skript.
 Therefore you have to put the:
