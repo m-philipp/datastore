@@ -1,0 +1,17 @@
+[
+  {
+    "type": "link",
+    "link": "./",
+    "title": "Home"
+  },
+  {
+    "type": "link",
+    "link": "./data",
+    "title": "<i class=\"fa fa-bar-chart\"></i> Daten"
+  },
+  {
+    "type": "link",
+    "link": "./apiDocumentation",
+    "title": "<i class=\"fa fa-wrench\"></i> Api-Dokumentation"
+  }
+]

@@ -1,7 +1,2 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: martin
- * Date: 02.07.2015
- * Time: 17:48
- */
+Your Registration was successfull.
+Please check your Mail for the verification.

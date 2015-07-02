@@ -87,7 +87,28 @@ class EpiRoute
 	  {
 	  }*/
 
-	/**
+    /**
+     * @name  loadDir
+     * @author  Martin Philipp <mail@martin-philipp.de>
+     * @param string $dir
+     * @static method
+     */
+    public function loadDir($dir)
+    {
+        //$realDir = Epi::getPath('config') . "/{$dir}";
+        $realDir = $dir;
+
+        $files = scandir($realDir);
+
+        foreach ($files as $file) {
+            if ($file != "." and $file != "..")
+                $this->load($dir . DIRECTORY_SEPARATOR . $file);
+        }
+
+    }
+
+
+    /**
 	 * load('/path/to/file');
 	 * @name  load
 	 * @author  Jaisen Mathai <jaisen@jmathai.com>
@@ -95,7 +116,9 @@ class EpiRoute
 	 */
 	public function load($file)
 	{
-		$file = Epi::getPath('config') . "/{$file}";
+
+        // $file = Epi::getPath('config') . "/{$file}";
+
 		if (!file_exists($file)) {
 			EpiException::raise(new EpiException("Config file ({$file}) does not exist"));
 			break; // need to simulate same behavior if exceptions are turned off

@@ -1,6 +1,6 @@
 <div class="col-sm-12">
     <div class="well bs-component">
-        <h2>Einstellungen</h2>
+        <h2>Registrieren</h2>
         <br/>
         <?php if ($error) { ?>
             <div class="alert alert-dismissable alert-danger">
@@ -20,7 +20,7 @@
 
                 <div class="col-sm-10">
                     <input type="email" name="mail" class="form-control" id="inputEmail"
-                           placeholder="<?php echo $mail; ?>">
+                           placeholder="mail@example.com">
                 </div>
             </div>
             <br/>

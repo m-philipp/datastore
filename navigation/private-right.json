@@ -1,0 +1,39 @@
+[
+  {
+    "type": "link",
+    "link": "./logout",
+    "title": "<i class=\"fa fa-sign-out\"></i>"
+  },
+  {
+    "type": "menu",
+    "link": "./help",
+    "title": "<i class=\"fa fa-question-circle\"></i>",
+    "menu": [
+      {
+        "type": "link",
+        "link": "./kontakt",
+        "title": "Kontakt"
+      },
+      {
+        "type": "link",
+        "link": "./faq",
+        "title": "FAQ"
+      },
+      {
+        "type": "link",
+        "link": "./impressum",
+        "title": "Impressum"
+      }
+    ]
+  },
+  {
+    "type": "link",
+    "link": "./settings",
+    "title": "<i class=\"fa fa-cogs\"></i>"
+  },
+  {
+    "type": "link",
+    "link": "./tokens",
+    "title": "<i class=\"fa fa-tags\"></i>"
+  }
+]

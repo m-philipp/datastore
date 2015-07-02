@@ -1,0 +1,39 @@
+[
+  {
+    "type": "link",
+    "link": "./register",
+    "title": "Registrieren"
+  },
+  {
+    "type": "link",
+    "link": "./login",
+    "title": "<i class=\"fa fa-sign-in\"></i>"
+  },
+  {
+    "type": "menu",
+    "link": "",
+    "title": "<i class=\"fa fa-question-circle\"></i>",
+    "menu": [
+      {
+        "type": "link",
+        "link": "./help",
+        "title": "<i class=\"fa fa-lightbulb-o\"></i> Hilfe"
+      },
+      {
+        "type": "link",
+        "link": "./faq",
+        "title": "<i class=\"fa fa-info-circle\"></i> FAQ"
+      },
+      {
+        "type": "link",
+        "link": "./contact",
+        "title": "<i class=\"fa fa-bullhorn\"></i> Kontakt"
+      },
+      {
+        "type": "link",
+        "link": "./impressum",
+        "title": "<i class=\"fa fa-paperclip\"></i>  Impressum"
+      }
+    ]
+  }
+]

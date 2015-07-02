@@ -2,18 +2,16 @@
 
 //Class for Pre Alpha Navigation functionality
 
-class Route
+class Data
 {
 
 
     public static function viewStream($streamId)
     {
+        Util::checkLogin();
 
-        $params = array();
-        $params['navigation'] = self::$navigation;
-        $params['content'] = getTemplate()->get('viewStream.php', array('stream' => $streamId));
-        $params['bp'] = './../';
-
+        $params = Util::initNavigation('./data/viewStream');
+        $params['content'] = getTemplate()->get('viewStream.php', $params);
         getTemplate()->display('layout.php', $params);
 
     }
@@ -45,17 +43,18 @@ class Route
 
     public static function viewList()
     {
+        Util::checkLogin();
 
-        $result = getDatabase()->all('SELECT DISTINCT streamId FROM store ORDER BY streamId ASC');
+        $params = Util::initNavigation('./data/viewStream');
+
+        $result = getDatabase()->all('SELECT DISTINCT sid FROM store ORDER BY sid ASC');
 
         $streams = array();
         foreach ($result as $val) {
-            $streams[] = $val['streamId'];
+            $streams[] = $val['sid'];
         }
-        $params = array();
-        $params['navigation'] = self::$navigation;
+
         $params['content'] = getTemplate()->get('viewList.php', array('streams' => $streams));
-        $params['bp'] = './';
 
         getTemplate()->display('layout.php', $params);
 

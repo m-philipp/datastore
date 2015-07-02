@@ -6,29 +6,29 @@
   },
   {
     "type": "menu",
-    "link": "./",
-    "title": "MyTitle",
+    "link": "./features",
+    "title": "Features",
     "menu": [
       {
         "type": "link",
-        "link": "./1/2/3",
-        "title": "Test"
+        "link": "./",
+        "title": "REST API"
       },
       {
         "type": "link",
         "link": "./",
-        "title": "Home"
+        "title": "Zugangs-Token"
       },
       {
         "type": "link",
         "link": "./",
-        "title": "Home"
+        "title": "Live Visualisierung"
       }
     ]
   },
   {
     "type": "link",
-    "link": "./viewList",
-    "title": "Data"
+    "link": "./apiDocumentation",
+    "title": "<i class=\"fa fa-wrench\"></i> Api-Dokumentation"
   }
 ]
