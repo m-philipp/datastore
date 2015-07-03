@@ -36,8 +36,11 @@
 
 
     <script src="<?php echo $bp; ?>lib/js/jquery-2.1.4.js"></script>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo $bp; ?>lib/js/jquery.datetimepicker.js"></script>
+    <script src="<?php echo $bp; ?>lib/js/jquery.datetimepicker.js"></script>
+
+    <script src="<?php echo $bp; ?>lib/js/moment-with-locales.js"></script>
+
+    <script language="javascript" type="text/javascript" src="<?php echo $bp; ?>lib/js/jquery.flot.js"></script>
 
 
 </head>

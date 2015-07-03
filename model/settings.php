@@ -14,7 +14,7 @@ Class Settings
         Util::checkLogin();
 
         $sql = 'SELECT mail FROM users WHERE uid=:uid';
-        $mail = getDatabase()->one($sql, array('uid' => getSession()->get(Session::USER_ID)));
+        $mail = getDatabase()->one($sql, array(':uid' => getSession()->get(Session::USER_ID)));
 
         if (empty($mail['mail'])) {
             getRoute()->redirect(getConfig()->get('global')->basepath . 'error', null, true);

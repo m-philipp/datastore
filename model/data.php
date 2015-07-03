@@ -10,6 +10,8 @@ class Data
     {
         Util::checkLogin();
 
+        // TODO
+
         $params = Util::initNavigation('./data/viewStream');
         $params['content'] = getTemplate()->get('viewStream.php', $params);
         getTemplate()->display('layout.php', $params);
@@ -18,25 +20,22 @@ class Data
 
     public static function view($streamId)
     {
-        $params = array();
-        $params['streamId'] = $streamId;
-        $result = getDatabase()->all('SELECT loggedTime FROM store WHERE streamId=:streamId ORDER BY loggedTime DESC LIMIT 0, 30 ', $params);
+        Util::checkLogin();
+        $params = Util::initNavigation('./data/view/' . $streamId);
 
-        if (count($result) < 2) {
-            exit;
-        } // TODO
+        $result = getDatabase()->one('SELECT comment FROM user2store WHERE sid=:sid AND uid=:uid',
+            array(
+                ":sid" => $streamId,
+                ":uid" => getSession()->get(Session::USER_ID)));
 
-        $startTimestamp = $result[0]['loggedTime'] - 3600;
-        $endTimestamp = $result[count($result) - 1]['loggedTime'] + 3600;
+        if (empty($result)) {
+            getRoute()->redirect(getConfig()->get('global')->basepath . 'error', null, true);
+            return;
+        }
 
-        // 2000/01/01 00:00
-        $end = date('Y/m/d H:i', $endTimestamp);
-        $start = date('Y/m/d H:i', $startTimestamp);
-
-        $params = array();
-        $params['navigation'] = self::$navigation;
-        $params['content'] = getTemplate()->get('view.php', array('stream' => $streamId, 'start' => $start, 'end' => $end, 'startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
-        $params['bp'] = './../';
+        $params['comment'] = $result['comment'];
+        $params['sid'] = $streamId;
+        $params['content'] = getTemplate()->get('view.php', $params);
 
         getTemplate()->display('layout.php', $params);
     }
@@ -47,16 +46,70 @@ class Data
 
         $params = Util::initNavigation('./data/viewStream');
 
-        $result = getDatabase()->all('SELECT DISTINCT sid FROM store ORDER BY sid ASC');
+        $result = getDatabase()->all('SELECT DISTINCT sid, comment FROM user2store WHERE uid=:uid ORDER BY sid ASC',
+            array(":uid" => getSession()->get(Session::USER_ID)));
 
-        $streams = array();
-        foreach ($result as $val) {
-            $streams[] = $val['sid'];
-        }
+        $params['streams'] = $result;
 
-        $params['content'] = getTemplate()->get('viewList.php', array('streams' => $streams));
+        $params['content'] = getTemplate()->get('viewList.php', $params);
 
         getTemplate()->display('layout.php', $params);
+
+    }
+
+
+    public static function addStream()
+    {
+        Util::checkLogin();
+
+        if (empty($_POST['comment'])) {
+            getRoute()->redirect(getConfig()->get('global')->basepath . 'data', null, true);
+            return;
+        }
+
+
+        $sid = getDatabase()->one('SELECT sid FROM user2store ORDER BY sid DESC LIMIT 1')['sid'] + 1;
+
+        getDatabase()->execute('INSERT INTO user2store(uid, sid, comment) VALUES(:uid, :sid, :comment)',
+            array(
+                ":uid" => getSession()->get(Session::USER_ID),
+                ':sid' => $sid,
+                ":comment" => $_POST['comment']
+            ));
+
+        getRoute()->redirect(getConfig()->get('global')->basepath . 'data', null, true);
+        return;
+    }
+
+    public static function deleteStream($stream)
+    {
+        Util::checkLogin();
+
+        $sql = 'SELECT id FROM user2store WHERE uid=:uid AND sid=:sid';
+        $id = getDatabase()->one($sql,
+            array(
+                ':uid' => getSession()->get(Session::USER_ID),
+                ':sid' => $stream
+            ));
+
+        if (empty($id)) {
+            getRoute()->redirect(getConfig()->get('global')->basepath . 'error', null, true);
+            return;
+        }
+
+        $affectedRows = getDatabase()->execute('DELETE FROM user2store WHERE id=:id',
+            array(
+                ':id' => $id['id']
+            ));
+
+        if (empty($affectedRows)) {
+            getRoute()->redirect(getConfig()->get('global')->basepath . 'error', null, true);
+            return;
+        }
+
+
+        getRoute()->redirect(getConfig()->get('global')->basepath . 'data', null, true);
+        return;
 
     }
 }
