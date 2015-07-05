@@ -20,25 +20,23 @@ getConfig()->load('config.ini');
 $sql_conf = getConfig()->get('mysql');
 
 EpiDatabase::employ('mysql', $sql_conf->database,
-	$sql_conf->server,
-	$sql_conf->user,
-	$sql_conf->password);
+    $sql_conf->server,
+    $sql_conf->user,
+    $sql_conf->password);
 
 
+for ($i = 0; $i < 100; $i++) {
+    time_nanosleep(0, 100000000);
 
+    $time = microtime(true) * 1000;
+    $value = sin((pi() * $i * 2) / 100);
+    print($time . " " . $value . "\n");
 
-for($i = 0; $i < 100; $i++){
-	time_nanosleep(0, 100000000);
+    $userId = getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(1, :val, :loggedTime)', array(':loggedTime' => $time, ':val' => $value));
 
-	$time = microtime(true);
-	$value = sin((pi()*$i*2)/100);
-	print($time." ".$value."\n");
-
-	$userId = getDatabase()->execute('INSERT INTO store(streamId, val, loggedTime) VALUES(42, :val, :loggedTime)', array(':loggedTime' => $time, ':val' => $value));
-
-	if($i == 100){
-		$i = 0;
-	}
+    if ($i == 100) {
+        $i = 0;
+    }
 }
 
 ?>

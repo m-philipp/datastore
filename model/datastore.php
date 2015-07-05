@@ -26,6 +26,8 @@ class DataStore
      */
     static public function retrieve($streamId)
     {
+        // TODO FIX IT !
+
 
         $exampleValues = array((string)microtime(true) => rand(0, 255));
 
@@ -50,6 +52,7 @@ class DataStore
      */
     static public function retrieveFrom($streamId, $from)
     {
+        // TODO FIX IT !
 
         // TODO ORDER BY loggedTime DESC
 
@@ -85,12 +88,17 @@ class DataStore
 
         $result = getDatabase()->all('SELECT val, loggedTime FROM store WHERE sid=:streamId AND loggedTime>:from AND loggedTime<:to', $params);
 
-        $returnValue = array();
 
-        foreach ($result as $value) {
-            $returnValue[$value["loggedTime"]] = $value["val"];
+        $returnValue["data"] = array();
+        for ($i = 0;
+             $i < count($result);
+             $i++) {
+            $returnValue["data"][] = array(
+                (float)$result[$i]['loggedTime'],
+                (float)$result[$i]['val']);
         }
         return $returnValue;
+
 
     }
 

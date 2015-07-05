@@ -41,6 +41,9 @@
     <script src="<?php echo $bp; ?>lib/js/moment-with-locales.js"></script>
 
     <script language="javascript" type="text/javascript" src="<?php echo $bp; ?>lib/js/jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo $bp; ?>lib/js/jquery.flot.time.js"></script>
+    <script language="javascript" type="text/javascript"
+            src="<?php echo $bp; ?>lib/js/jquery.flot.selection.js"></script>
 
 
 </head>

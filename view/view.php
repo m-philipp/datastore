@@ -11,6 +11,9 @@
         <hr/>
 
         <div id="placeholder" style="width: 100%; height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+
+        <div id="overview" style="width: 100%; height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+
     </div>
 
 </div>
@@ -18,14 +21,14 @@
 
     moment.locale('de');
 
-    var plotData;
+    //var updateData;
 
     var startTimestamp = moment().subtract(7, 'days').format("DD.MM.YYYY hh:mm");
     var endTimestamp = moment().format("DD.MM.YYYY hh:mm");
     var sid = <?php echo $sid; ?>;
     var bp = '<?php echo $bp; ?>';
 
-    var options = {
+    var dateTimePickerOptions = {
         lang: 'de',
         i18n: {
             de: {
@@ -47,17 +50,18 @@
             startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
             endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
             // startTimestamp = getTimestamp($(this).val());
-            plotData();
+            updateData();
+            replot();
         }
 
     };
 
     $("#datetimepickerStart").val(startTimestamp)
-    $('#datetimepickerStart').datetimepicker(options);
+    $('#datetimepickerStart').datetimepicker(dateTimePickerOptions);
 
 
     $("#datetimepickerEnd").val(endTimestamp)
-    $('#datetimepickerEnd').datetimepicker(options);
+    $('#datetimepickerEnd').datetimepicker(dateTimePickerOptions);
 
     function getTimestamp(str) {
         var d = Math.round(+new Date(str) / 1000);
