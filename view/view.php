@@ -1,19 +1,45 @@
-<div class="col-sm-12">
-    <h1>View Data: <?php echo $comment; ?></h1>
-
-    <br/>
-
-    <div class="well">
-        Start Date: <input id="datetimepickerStart" type="text"> <br/>
-        End Date: <input id="datetimepickerEnd" type="text">
+<div class="col-sm-12 col-lg-12">
 
 
-        <hr/>
+    <div class="well row">
+        <div class="col-sm-12 col-xs-12">
+            <h1>View Data: <em style="color: #72000f"><?php echo $comment; ?></em></h1>
 
-        <div id="placeholder" style="width: 100%; height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+            Wenn Sie mehr als <?php echo getConfig()->get('global')->maxSubsamples; ?> Datenpunkte in dem ausgewählten
+            Zeitraum vorhanden sind, werden die Datenpunkte mit einem linearen subsampling Verfahren
+            auf <?php echo getConfig()->get('global')->maxSubsamples; ?> Datenpunkte begrenzt.
+        </div>
 
-        <div id="overview" style="width: 100%; height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+        <div class="clearfix">
+            <hr/>
+        </div>
 
+        <div class="col-sm-3 col-xs-12 data-container">
+            Start Date: <input class="form-control" id="datetimepickerStart" type="text"> <br/>
+            End Date: <input class="form-control" id="datetimepickerEnd" type="text">
+
+        </div>
+        <div class="col-sm-2 col-xs-12 data-container">&nbsp;
+        </div>
+        <div class="col-sm-7 col-xs-12 data-container">
+            Übersicht;
+            <div id="overview" style="height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+        </div>
+
+
+        <div class="clearfix">
+            <hr/>
+        </div>
+
+
+        <div class="col-sm-12 col-xs-12 data-container">
+            Stream Data:
+            <div id="placeholder" style="height: 200px; font-size: 14px; line-height: 1.2em;"></div>
+        </div>
+        <div class="col-sm-12 col-xs-12 data-container">
+            <button class="btn btn-fab btn-raised btn-primary pull-right" onclick="resetOverview();"><i
+                    class="fa fa-undo"></i></button>
+        </div>
     </div>
 
 </div>
@@ -46,15 +72,29 @@
         format: 'd.m.Y H:i',
 
         onChangeDateTime: function (dp, $input) {
+            resetOverview();
 
-            startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
-            endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
-            // startTimestamp = getTimestamp($(this).val());
-            updateData();
-            replot();
+            /*
+             startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
+
+             endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
+             // startTimestamp = getTimestamp($(this).val());
+             updateData();
+             */
+
+
         }
 
+
     };
+
+    function resetOverview() {
+        startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
+        endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
+        // startTimestamp = getTimestamp($(this).val());
+        updateData();
+
+    }
 
     $("#datetimepickerStart").val(startTimestamp)
     $('#datetimepickerStart').datetimepicker(dateTimePickerOptions);

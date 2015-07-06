@@ -9,11 +9,26 @@ class Data
     public static function viewStream($streamId)
     {
         Util::checkLogin();
+        $params = Util::initNavigation('./data/view/' . $streamId);
 
-        // TODO
+        $result = getDatabase()->one('SELECT comment FROM user2store WHERE sid=:sid AND uid=:uid',
+            array(
+                ":sid" => $streamId,
+                ":uid" => getSession()->get(Session::USER_ID)));
 
-        $params = Util::initNavigation('./data/viewStream');
+        if (empty($result)) {
+            getRoute()->redirect(getConfig()->get('global')->basepath . 'error', null, true);
+            return;
+        }
+
+        /* TODO:
+         * view the last 1k values and make the granularity selectable.
+         */
+
+        $params['comment'] = $result['comment'];
+        $params['sid'] = $streamId;
         $params['content'] = getTemplate()->get('viewStream.php', $params);
+
         getTemplate()->display('layout.php', $params);
 
     }
@@ -46,10 +61,18 @@ class Data
 
         $params = Util::initNavigation('./data/viewStream');
 
-        $result = getDatabase()->all('SELECT DISTINCT sid, comment FROM user2store WHERE uid=:uid ORDER BY sid ASC',
+        $results = getDatabase()->all('SELECT DISTINCT sid, comment FROM user2store WHERE uid=:uid ORDER BY sid ASC',
             array(":uid" => getSession()->get(Session::USER_ID)));
 
-        $params['streams'] = $result;
+
+        $params['streams'] = $results;
+
+        for ($i = 0; $i < count($params['streams']); $i++) {
+            $count = getDatabase()->one('SELECT COUNT(id) FROM store WHERE sid=:sid',
+                array(":sid" => $params['streams'][$i]['sid']));
+            $params['streams'][$i]["count"] = $count["COUNT(id)"];
+        }
+
 
         $params['content'] = getTemplate()->get('viewList.php', $params);
 

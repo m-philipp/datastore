@@ -64,49 +64,82 @@ class Api
     }
 
     /**
-     * authenticates if theres an valid token given as
+     * If the client is authenticated the return value will contain the uid.
+     * If not authenticated with given read/write permissions it exits with 403.
      * Auth-Token: token
      * in the HTTP Header.
+     * @params read if read rights on the streams are needed
+     * @params write if write rights on the streams are needed
      * @return userId (or exits with 403)
      */
-    static public function authenticate($right)
+    static public function authenticate($read = true, $write = true)
     {
 
         // TODO check if the correct Right is assured
-        // TODO maybe some Users want that tha API can add Tasks but only on Board xy
 
-        $header = Api::parseRequestHeaders();
-        if (array_key_exists('Auth-Token', $header)) {
-            $token = $header["Auth-Token"];
-            $result = getDatabase()->one('SELECT userId, validUntil FROM tokens WHERE hash=:hash', array(':hash' => $token));
+        $viaHeader = self::authenticateViaHeaderToken($read, $write);
+        $viaSession = self::authenticateViaSession();
 
-
-            if (!empty($result['validUntil'])) {
-                $validUntil = new DateTime($result['validUntil']);
-                $now = new DateTime("now");
-
-                if ($validUntil < $now) {
-                    header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
-                    exit;
-                }
-            } else {
-                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
-                exit;
-            }
-
-
-            if (array_key_exists('userId', $result) && !empty($result['userId'])) {
-
-                $status = getDatabase()->one('SELECT status FROM user WHERE userId=:userId', array(':userId' => $result['userId']));
-
-                if (array_key_exists('status', $status) && is_numeric($status['status']) && $status['status'] > 0) {
-                    return $result['userId'];
-                }
-            }
+        if ($viaHeader > -1) {
+            return $viaHeader;
+        } elseif ($viaSession > -1) {
+            return $viaSession;
         }
 
         header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
         exit;
+
+    }
+
+    static public function authenticateViaSession()
+    {
+
+        if (is_numeric(getSession()->get(Session::USER_ID))) {
+            return getSession()->get(Session::USER_ID);
+        }
+        return -1;
+    }
+
+    static public function authenticateViaHeaderToken($read, $write)
+    {
+
+        $header = Api::parseRequestHeaders();
+
+        if (!array_key_exists('Auth-Token', $header)) {
+            return -1;
+        }
+
+        $token = $header["Auth-Token"];
+        $result = getDatabase()->one('SELECT uid, validTo FROM tokens WHERE token=:token
+                    AND r=' . ($read ? '1' : '0') . '
+                    AND w=' . ($write ? '1' : '0'),
+            array(':token' => $token));
+
+
+        if (empty($result['validTo'])) {
+            return -1;
+        }
+
+        $validUntil = new DateTime($result['validTo']);
+        $now = new DateTime("now");
+
+        if ($validUntil < $now) {
+            return -1;
+        }
+
+        if (!array_key_exists('uid', $result) or empty($result['uid'])) {
+            return -1;
+        }
+
+        $active = getDatabase()->one('SELECT active FROM users WHERE uid=:uid AND verified=1', array(':uid' => $result['uid']));
+
+        if (array_key_exists('active', $active) && is_numeric($active['active']) && $active['active'] > 0) {
+            return $active['uid'];
+        } else {
+            return -1;
+        }
+
+
     }
 
     /**

@@ -1,7 +1,15 @@
 
+hr {
+    border-top: 1px solid #BABABA;
+}
+
 .navbar-material-wizzzard.navbar {
     background-color: #72000f;
 
+}
+
+.data-container {
+    padding: 10px;
 }
 
 .tokenInput {

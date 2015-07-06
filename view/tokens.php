@@ -37,13 +37,21 @@
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                                         </button>
-                                        <h4 class="modal-title">Token</h4>
+                                        <h4 class="modal-title">Token: <?php echo $token['comment']; ?></h4>
+
+                                        <hr/>
+
+                                        Lesen: <?php echo $token['r'] ? "<i class='fa fa-check'></i>" : "<i class='fa fa-ban'></i>"; ?>
+                                        <br/>
+                                        Schreiben: <?php echo $token['w'] ? "<i class='fa fa-check'></i>" : "<i class='fa fa-ban'></i>"; ?>
+                                        <br/>
                                     </div>
                                     <div class="modal-body">
-                                        <p>
+                                        <p style="background-color: rgb(244, 244, 244);  padding: 20px;  border: 1px solid #ccc;">
                                             <?php echo $token['token']; ?>
                                         </p>
                                     </div>
+
                                     <div class="modal-footer">
                                         <button class="btn btn-primary" data-dismiss="modal">Schließen</button>
                                     </div>
