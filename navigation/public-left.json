@@ -27,8 +27,20 @@
     ]
   },
   {
-    "type": "link",
-    "link": "./apiDocumentation",
-    "title": "<i class=\"fa fa-wrench\"></i> Api-Dokumentation"
+    "type": "menu",
+    "link": "./help",
+    "title": "<i class=\"fa fa-wrench\"></i> Api-Dokumentation",
+    "menu": [
+      {
+        "type": "link",
+        "link": "./apiDocumentation",
+        "title": "Einführung"
+      },
+      {
+        "type": "link",
+        "link": "./apiDocumentation-data",
+        "title": "Daten Zugriff"
+      }
+    ]
   }
 ]
