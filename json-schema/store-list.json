@@ -1,0 +1,13 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "time": {"type": "string"},
+      "value": {"type": "string"},
+      "checksum": {"type": "string"}
+    },
+    "additionalProperties": false
+  },
+  "minItems": 1
+}

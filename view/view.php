@@ -15,14 +15,14 @@
         </div>
 
         <div class="col-sm-3 col-xs-12 data-container">
-            Start Date: <input class="form-control" id="datetimepickerStart" type="text"> <br/>
-            End Date: <input class="form-control" id="datetimepickerEnd" type="text">
+            Start Datum: <input class="form-control" id="datetimepickerStart" type="text"> <br/>
+            End Datum: <input class="form-control" id="datetimepickerEnd" type="text">
 
         </div>
         <div class="col-sm-2 col-xs-12 data-container">&nbsp;
         </div>
         <div class="col-sm-7 col-xs-12 data-container">
-            Übersicht;
+            Übersicht:
             <div id="overview" style="height: 100px; font-size: 14px; line-height: 1.2em;"></div>
         </div>
 
@@ -33,7 +33,7 @@
 
 
         <div class="col-sm-12 col-xs-12 data-container">
-            Stream Data:
+            Stream Daten:
             <div id="placeholder" style="height: 200px; font-size: 14px; line-height: 1.2em;"></div>
         </div>
         <div class="col-sm-12 col-xs-12 data-container">
@@ -46,9 +46,6 @@
 <script type="text/javascript">
 
     moment.locale('de');
-
-    //var updateData;
-
     var startTimestamp = moment().subtract(7, 'days').format("DD.MM.YYYY hh:mm");
     var endTimestamp = moment().format("DD.MM.YYYY hh:mm");
     var sid = <?php echo $sid; ?>;
@@ -73,16 +70,6 @@
 
         onChangeDateTime: function (dp, $input) {
             resetOverview();
-
-            /*
-             startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
-
-             endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
-             // startTimestamp = getTimestamp($(this).val());
-             updateData();
-             */
-
-
         }
 
 
@@ -91,7 +78,6 @@
     function resetOverview() {
         startTimestamp = $("#datetimepickerStart").val(); // TODO GMT + 1 ?
         endTimestamp = $("#datetimepickerEnd").val(); // TODO GMT + 1 ?
-        // startTimestamp = getTimestamp($(this).val());
         updateData();
 
     }
@@ -110,9 +96,6 @@
     var data = [];
 
     var i = 0;
-
-
-    // $.plot("#placeholder", [data]);
 </script>
 
 

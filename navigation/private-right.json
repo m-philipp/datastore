@@ -11,7 +11,7 @@
     "menu": [
       {
         "type": "link",
-        "link": "./kontakt",
+        "link": "./contact",
         "title": "Kontakt"
       },
       {

@@ -5,49 +5,100 @@ class DataStore
 {
 
 
-    static public function store()
+    static public function storeList($sid)
+    {
+        $uid = Api::authenticate(false, true);
+
+
+        if (!is_numeric($sid))
+            API::failure();
+
+        $json = Api::getValidJson("./json-schema/store-list.json");
+        if ($json == Null) Api::failure();
+
+
+        $result = getDatabase()->all('SELECT id FROM user2store WHERE sid=:streamId AND uid=:uid', array(":streamId" => $sid, ":uid" => $uid));
+
+        if (empty($result)) {
+            Api::failure();
+        }
+
+        foreach ($json as $datum) {
+            $time = $datum->time;
+            $value = $datum->value;
+            $checksum = $datum->checksum;
+
+            if (!self::calculateChecksum($checksum, $uid, $sid, $time, $value))
+                Api::failure();
+
+            getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(:streamId, :val, :loggedTime)', array(':streamId' => $sid, ':loggedTime' => $time, ':val' => $value));
+        }
+    }
+
+    static public function store($sid)
     {
 
-        // TODO check write permission
+        $uid = Api::authenticate(false, true);
+
+
+        if (!is_numeric($sid))
+            API::failure();
 
         $json = Api::getValidJson("./json-schema/store.json");
         if ($json == Null) Api::failure();
 
-        $time = microtime(true);
-        $streamId = $json->streamId;
+
+        $time = $json->time;
         $value = $json->value;
 
-        if ($json->checksum = !$streamId + $value)
+        $result = getDatabase()->all('SELECT id FROM user2store WHERE sid=:streamId AND uid=:uid', array(":streamId" => $sid, ":uid" => $uid));
+
+        if (empty($result)) {
+            Api::failure();
+        }
+
+        if (!self::calculateChecksum($json->checksum, $uid, $sid, $time, $value))
             Api::failure();
 
-        getDatabase()->execute('INSERT INTO store(streamId, val, loggedTime) VALUES(:streamId, :val, :loggedTime)', array(':streamId' => $streamId, ':loggedTime' => $time, ':val' => $value));
+        getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(:streamId, :val, :loggedTime)', array(':streamId' => $sid, ':loggedTime' => $time, ':val' => $value));
 
     }
 
     /*
      * get 5GB
      */
-    static public function retrieve($streamId)
+    static public function retrieveNumValues($streamId, $numValues)
     {
-        // TODO FIX IT !
+        $uid = Api::authenticate(true, false);
 
 
-        $exampleValues = array((string)microtime(true) => rand(0, 255));
+        $result = getDatabase()->all('SELECT id FROM user2store WHERE sid=:streamId AND uid=:uid', array(":streamId" => $streamId, ":uid" => $uid));
 
-        time_nanosleep(0, 5000000);
-        $exampleValues = array_merge($exampleValues, array((string)microtime(true) => rand(0, 255)));
+        if (empty($result)) {
+            Api::failure();
+        }
 
-        time_nanosleep(0, 5000000);
-        $exampleValues = array_merge($exampleValues, array((string)microtime(true) => rand(0, 255)));
-
-        time_nanosleep(0, 5000000);
-        $exampleValues = array_merge($exampleValues, array((string)microtime(true) => rand(0, 255)));
-
-        time_nanosleep(0, 5000000);
-        $exampleValues = array_merge($exampleValues, array((string)microtime(true) => rand(0, 255)));
+        if (!is_numeric($numValues))
+            API::failure();
 
 
-        return $exampleValues;
+        $params = array();
+        $params[":streamId"] = $streamId;
+
+        $result = getDatabase()->all('SELECT val, loggedTime FROM store WHERE sid=:streamId ORDER BY loggedTime DESC LIMIT ' . $numValues, $params);
+
+
+        $returnValue = array();
+        for ($i = 0;
+             $i < count($result);
+             $i++) {
+            $returnValue[] = array(
+                (float)$result[$i]['loggedTime'],
+                (float)$result[$i]['val']);
+        }
+
+        return array("data" => self::subsample($returnValue, (int)getConfig()->get('global')->maxSubsamples));
+
     }
 
     /*
@@ -55,22 +106,8 @@ class DataStore
      */
     static public function retrieveFrom($streamId, $from)
     {
-        // TODO FIX IT !
-
-        // TODO ORDER BY loggedTime DESC
-
-        $params = array();
-        $params[":streamId"] = $streamId;
-        $params[":loggedTime"] = $from;
-        $result = getDatabase()->all('SELECT val, loggedTime FROM store WHERE streamId=:streamId AND loggedTime>:loggedTime', $params);
-
-        $returnValue = array();
-
-        foreach ($result as $value) {
-            $returnValue[$value["loggedTime"]] = $value["val"];
-        }
-        return $returnValue;
-
+        $to = (int)(microtime(true) / 1000);
+        return self::retrieveFromTo($streamId, $from, $to);
     }
 
     /*
@@ -113,9 +150,27 @@ class DataStore
 
     }
 
+    static public function calculateChecksum($checksum, $uid, $streamId, $time, $value)
+    {
+        if (!is_numeric($checksum)
+            or !is_numeric($uid)
+            or !is_numeric($streamId)
+            or !is_numeric($time)
+            or !is_numeric($value)
+        ) {
+            return false;
+        } elseif ($time < 1400000000000) {
+            return false;
+        } elseif ($checksum != $time + $value) {
+            return false;
+        }
+
+        return true;
+    }
+
     static public function subsample($data, $amountReturnValues)
     {
-        //var_dump($data);
+        // TODO fasten it up!
 
         if ($amountReturnValues >= count($data) or count($data) < 3)
             return $data;

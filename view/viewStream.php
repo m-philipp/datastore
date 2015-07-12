@@ -10,16 +10,16 @@
             <hr/>
         </div>
 
+        <div class="col-sm-12 col-xs-12 data-container">
+            <div id="updateIntervallSlider" class="slider slider-material-orange"></div>
 
-        <div class="col-sm-5 col-xs-12 data-container">
-            <p>Update Intervall: <input id="updateInterval" type="text" value=""
-                                        style="text-align: right; width:5em"> milliseconds</p>
+
+            <p>Update Intervall: <span id="updateInterval">0</span> Millisekunden</p>
         </div>
-        <div class="col-sm-2 col-xs-12 data-container">&nbsp;
-        </div>
-        <div class="col-sm-5 col-xs-12 data-container">
-            <p>Number of Values: <input id="totalPoints" type="text" value="" style="text-align: right; width:5em">
-                Values</p>
+
+        <div class="col-sm-12 col-xs-12 data-container">
+            <div id="totalPointsSlider" class="slider slider-material-orange"></div>
+            <p>Datenpunkte: <span id="totalPoints">0</span> Werte</p>
         </div>
 
         <div class="clearfix">
@@ -28,7 +28,7 @@
 
         <div class="col-sm-12 col-xs-12 data-container">
             Stream Data:
-            <div id="placeholder" style="height: 100px; font-size: 14px; line-height: 1.2em;"></div>
+            <div id="placeholder" style="height: 200px; font-size: 14px; line-height: 1.2em;"></div>
         </div>
 
     </div>
@@ -38,45 +38,46 @@
 <script type="text/javascript">
     moment.locale('de');
 
-    //var updateData;
-
     var sid = <?php echo $sid; ?>;
     var bp = '<?php echo $bp; ?>';
 
-    // Set up the control widget
-
-    var updateInterval = 300;
-    $("#updateInterval").val(updateInterval).change(function () {
-        var v = $(this).val();
-        if (v && !isNaN(+v)) {
-            updateInterval = +v;
-            if (updateInterval < 1) {
-                updateInterval = 1;
-            } else if (updateInterval > 20000) {
-                updateInterval = 20000;
-            }
-            $(this).val("" + updateInterval);
-        }
-    });
-
+    var updateInterval = 2000;
+    $("#updateInterval").html(updateInterval);
     var totalPoints = 100;
-    $("#totalPoints").val(totalPoints).change(function () {
-        var v = $(this).val();
-        if (v && !isNaN(+v)) {
-            totalPoints = +v;
-            if (totalPoints < 5) {
-                totalPoints = 5;
-            } else if (totalPoints > 10000) {
-                totalPoints = 10000;
-            }
-            $(this).val("" + totalPoints);
+    $("#totalPoints").html(totalPoints);
+
+
+    var intervallSlider = $("#updateIntervallSlider").noUiSlider({
+        start: updateInterval,
+        connect: "lower",
+        range: {
+            min: 200,
+            max: 20000
         }
     });
+    intervallSlider.change(function () {
+        updateInterval = Math.round(intervallSlider.val());
+        $("#updateInterval").html(updateInterval);
+    });
 
-
+    var totalPointsSlider = $("#totalPointsSlider").noUiSlider({
+        start: totalPoints,
+        connect: "lower",
+        range: {
+            min: 20,
+            max: 2000
+        }
+    });
+    totalPointsSlider.change(function () {
+        totalPoints = Math.round(totalPointsSlider.val());
+        $("#totalPoints").html(totalPoints);
+    });
 </script>
 
 <script src="<?php echo $bp; ?>lib/js/viewStream.js">
 
 
 </script>
+
+
+

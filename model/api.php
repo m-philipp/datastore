@@ -105,14 +105,15 @@ class Api
 
         $header = Api::parseRequestHeaders();
 
+
         if (!array_key_exists('Auth-Token', $header)) {
             return -1;
         }
 
         $token = $header["Auth-Token"];
         $result = getDatabase()->one('SELECT uid, validTo FROM tokens WHERE token=:token
-                    AND r=' . ($read ? '1' : '0') . '
-                    AND w=' . ($write ? '1' : '0'),
+                    AND r>' . ($read ? '0' : '-1') . '
+                    AND w>' . ($write ? '0' : '-1'),
             array(':token' => $token));
 
 
@@ -120,10 +121,10 @@ class Api
             return -1;
         }
 
-        $validUntil = new DateTime($result['validTo']);
-        $now = new DateTime("now");
+        //$validUntil = new DateTime($result['validTo']);
+        //$now = new DateTime("now");
 
-        if ($validUntil < $now) {
+        if (time() > $result['validTo']) {
             return -1;
         }
 
@@ -131,7 +132,7 @@ class Api
             return -1;
         }
 
-        $active = getDatabase()->one('SELECT active FROM users WHERE uid=:uid AND verified=1', array(':uid' => $result['uid']));
+        $active = getDatabase()->one('SELECT uid, active FROM users WHERE uid=:uid AND verified=1', array(':uid' => $result['uid']));
 
         if (array_key_exists('active', $active) && is_numeric($active['active']) && $active['active'] > 0) {
             return $active['uid'];

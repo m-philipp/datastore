@@ -44,6 +44,8 @@
     <script language="javascript" type="text/javascript" src="<?php echo $bp; ?>lib/js/jquery.flot.time.js"></script>
     <script language="javascript" type="text/javascript"
             src="<?php echo $bp; ?>lib/js/jquery.flot.selection.js"></script>
+    <script language="javascript" type="text/javascript"
+            src="<?php echo $bp; ?>lib/js/jquery.nouislider.min.js"></script>
 
 
 </head>
@@ -76,6 +78,7 @@
         $.material.init();
     });
 </script>
+
 </body>
 
 </html>
