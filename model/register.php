@@ -151,13 +151,13 @@ Class Register
         $mail->isHTML(true);                                  // Set email format to HTML
 
         $mail->Subject = 'Ihre Registrierung auf Arcwind';
-        $mail->Body = 'Hallo,<br />Ihre Registrierung auf Arcwind war erfolgreich.<br />Ihr Benutzername lautet: ' . $mailRegistree . '<br />Um Ihre E-Mail Adresse zu verifizieren, klicken Sie bitte auf den folgenden Link.<br /><br /><a href=\'http://www.arcwind.de/register/' . $verifyCode . '\'>http://www.arcwind.de/register/' . $verifyCode . '</a><br /><br />Mit freundlichen Grüßen<br />Ihr Arcwind Team';
+        $mail->Body = 'Hallo,<br />Ihre Registrierung auf Arcwind war erfolgreich.<br />Ihr Benutzername lautet: ' . $mailRegistree . '<br />Um Ihre E-Mail Adresse zu verifizieren, klicken Sie bitte auf den folgenden Link.<br /><br /><a href=\'http://www.arcwind.de/register/verify/' . $verifyCode . '\'>http://www.arcwind.de/register/' . $verifyCode . '</a><br /><br />Mit freundlichen Grüßen<br />Ihr Arcwind Team';
         $mail->AltBody = 'Hallo,
 Ihre Registrierung auf Arcwind war erfolgreich.
 Ihr Benutzername lautet: ' . $mailRegistree . '
 Um Ihre E-Mail Adresse zu verifizieren, klicken Sie bitte auf den folgenden Link.
 
-http://www.arcwind.de/register/' . $verifyCode . '
+http://www.arcwind.de/register/verify/' . $verifyCode . '
 
 Mit freundlichen Grüßen
 Ihr Arcwind Team';
