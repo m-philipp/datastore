@@ -21,8 +21,15 @@
         <br/>
         The most Functionality is restricted to Authenticated Requests (See below).
 
+
+        <hr/>
+
+
         <h2>API URL:</h2>
         The API is located directly under http://www.arcwind.de/
+
+
+        <hr/>
 
         <h2>Version:</h2>
         The API Version is accessible via <code>GET</code>.
@@ -49,9 +56,7 @@ public
 }
 </pre>
         <div class="bs-callout bs-callout-info">
-            <strong>Example - Reply:</strong>
-            <br/>
-            &nbsp;
+            <h4>Example - Reply:</h4>
 <pre>
 {
     "version": "0.1"
@@ -88,6 +93,9 @@ public
         needed.
         If the API mentions <em>public</em> as Needed Rights, there is no need for the Auth-Token Header field at
         all.
+
+        <br/>
+        <br/>
 
         <div class="alert alert-dismissable alert-warning">
             <h4>Warning!</h4>
@@ -139,51 +147,6 @@ Access-Control-Allow-Methods: GET, POST, PUT, DELETE
 
         <br/><br/>&nbsp;
 
-        <hr/>
-
-        Check if the timestamp is bigger than 1400000000000
-
-        Checksum calculation.
-
-        <br/><br/>&nbsp;
-
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">JSON-Schema für einen neuen Wert</h3>
-            </div>
-            <div class="panel-body">
-                    <pre>{
-    "type": "object",
-    "properties": {
-        "time": {"type": "string"},
-        "value": {"type": "string"},
-        "checksum": {"type": "string"}
-    },
-    "additionalProperties": false
-}</pre>
-            </div>
-        </div>
-
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">JSON-Schema für eine Liste an neue Werten</h3>
-            </div>
-            <div class="panel-body">
-                    <pre>{
-"type": "array",
-"items": {
-    "type": "object",
-    "properties": {
-        "time": {"type": "string"},
-        "value": {"type": "string"},
-        "checksum": {"type": "string"}
-    },
-    "additionalProperties": false
-    },
-"minItems": 1
-}</pre>
-            </div>
-        </div>
 
     </div>
 

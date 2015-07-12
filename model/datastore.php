@@ -1,10 +1,20 @@
 <?php
 
 
+/**
+ * Class DataStore
+ *
+ * The DataStore contains the API for the Data related functionality.
+ */
 class DataStore
 {
 
 
+    /**
+     * API for storing a list of Timestamp, Value Pairs int the DB.
+     * @param int $sid the respective Stream where the data is supposed to be stored.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function storeList($sid)
     {
         $uid = Api::authenticate(false, true);
@@ -35,6 +45,11 @@ class DataStore
         }
     }
 
+    /**
+     * API Storgage Endpoint for the storage of a single timestamp value pair.
+     * @param int $sid the respective Stream where the data is supposed to be stored.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function store($sid)
     {
 
@@ -64,8 +79,40 @@ class DataStore
 
     }
 
-    /*
-     * get 5GB
+    /**
+     * API Endpoint for the storage of a value only. Timestamp is set to now.
+     * @param int $sid the StreamID for the saved data.
+     * @param float $val value to save.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
+    static public function storeVal($sid, $val)
+    {
+
+        $uid = Api::authenticate(false, true);
+
+
+        if (!is_numeric($sid) && !is_numeric($val))
+            API::failure();
+
+        $result = getDatabase()->all('SELECT id FROM user2store WHERE sid=:streamId AND uid=:uid', array(":streamId" => $sid, ":uid" => $uid));
+
+        if (empty($result)) {
+            Api::failure();
+        }
+
+        $time = round(microtime(true) * 1000);
+
+
+        getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(:streamId, :val, :loggedTime)', array(':streamId' => $sid, ':loggedTime' => $time, ':val' => $val));
+
+    }
+
+    /**
+     * API Endpoint to retrieve a specified amount of Data.
+     * @param int $streamId the StreamID from the requested data.
+     * @param int $numValues the amount of data requested.
+     * @return array $values the requested data array
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function retrieveNumValues($streamId, $numValues)
     {
@@ -101,17 +148,30 @@ class DataStore
 
     }
 
-    /*
-     * Retrieve Data which is newer than the from Timestamp
+
+    /**
+     * API Endpoint to retrieve since a given point of time.
+     * @param int $streamId the StreamID from the requested data.
+     * @param int $from starting timepoint.
+     * @return array $values the requested data array
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function retrieveFrom($streamId, $from)
     {
-        $to = (int)(microtime(true) / 1000);
+        $to = (int)(microtime(true) * 1000);
         return self::retrieveFromTo($streamId, $from, $to);
     }
 
     /*
      * retrieve Data From newer than from and older to
+     */
+    /**
+     * API Endpoint to retrieve a given timespan.
+     * @param int $streamId the StreamID from the requested data.
+     * @param int $from starting timepoint.
+     * @param int $to end timepoint.
+     * @return array the requested data array.
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function retrieveFromTo($streamId, $from, $to)
     {
@@ -150,6 +210,16 @@ class DataStore
 
     }
 
+    /**
+     * Checksum checker.
+     * @param float $checksum the proposed checksum
+     * @param int $uid userID
+     * @param int $streamId StreamID
+     * @param float $time timestamp
+     * @param float $value value
+     * @return bool $valid if the checksum is correct
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function calculateChecksum($checksum, $uid, $streamId, $time, $value)
     {
         if (!is_numeric($checksum)
@@ -168,6 +238,13 @@ class DataStore
         return true;
     }
 
+    /**
+     * linear Subsampling to reduce an array retrieved Data to an given length.
+     * @param array $data the timestamp value pairs of the full data array.
+     * @param int $amountReturnValues amount of the subsamples to be returned.
+     * @return mixed $subsampledData the subsampled data.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function subsample($data, $amountReturnValues)
     {
         // TODO fasten it up!

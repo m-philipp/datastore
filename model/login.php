@@ -9,12 +9,21 @@
 Class Login
 {
 
+    /**
+     * Model showing the login page with a failure message.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function loginFailed()
     {
         self::generateLoginPage(true);
     }
 
 
+    /**
+     * Model showing the login page optional with a failed message.
+     * @param bool $failed if a previous login attempt failed.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function generateLoginPage($failed = false)
     {
 
@@ -25,6 +34,10 @@ Class Login
         getTemplate()->display('layout.php', $params);
     }
 
+    /**
+     * Checking the POSTed credentials if correct performing a login and redirecting to start page.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function checkCredentials()
     {
 
@@ -61,6 +74,10 @@ Class Login
         //getSession()->set('name', 'value');
     }
 
+    /**
+     * performing a logout and redirecting to the start page.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function logout()
     {
 

@@ -9,6 +9,10 @@
 Class Tokens
 {
 
+    /**
+     * Model viewing the Tokens the user currently has. Thereby links for adding / removing are given.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function viewTokens()
     {
         Util::checkLogin();
@@ -23,6 +27,10 @@ Class Tokens
         getTemplate()->display('layout.php', $params);
     }
 
+    /**
+     * Model adding a new Token
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function addToken()
     {
         Util::checkLogin();
@@ -51,6 +59,11 @@ Class Tokens
     }
 
 
+    /**
+     * Model deleting the given Token
+     * @param int $token the Token to delete given by the token hash.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function deleteToken($token)
     {
         Util::checkLogin();

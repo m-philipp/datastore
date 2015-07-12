@@ -37,6 +37,14 @@ class Statics
         getTemplate()->display('layout.php', $params);
     }
 
+    public static function apiDocumentationData()
+    {
+        $params = Util::initNavigation('./apiDocumentation');
+        $params['content'] = getTemplate()->get('apiDocumentationData.php', $params);
+
+        getTemplate()->display('layout.php', $params);
+    }
+
     public static function impressum()
     {
         $params = Util::initNavigation('./impressum');

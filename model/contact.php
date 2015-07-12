@@ -9,6 +9,10 @@
 class Contact
 {
 
+    /**
+     * Stores a POSTed contact request. Viewing success page or redirecting to error page.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function storeContactRequest()
     {
         $form = empty($_POST['form']) ? "default" : $_POST['form'];
@@ -32,6 +36,11 @@ class Contact
 
     }
 
+    /**
+     * Model generating a contact form with an optional fail message.
+     * @param bool $fail if the prev. send in failed.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function generateContactForm($fail = false)
     {
         $params = Util::initNavigation('./contact');
@@ -41,12 +50,20 @@ class Contact
     }
 
 
+    /**
+     * Model viewing the Contact page with a failure message.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function contactFail()
     {
         self::generateContactForm(true);
     }
 
 
+    /**
+     * Model viewing the success message after sending in a contact form.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function contactSuccess()
     {
         $params = Util::initNavigation('./contact/success');

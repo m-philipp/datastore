@@ -2,10 +2,18 @@
 
 //Class for Pre Alpha Navigation functionality
 
+/**
+ * Class Data
+ */
 class Data
 {
 
 
+    /**
+     * Model viewing the a Live Stream.
+     * @param int $streamId
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function viewStream($streamId)
     {
         Util::checkLogin();
@@ -33,6 +41,11 @@ class Data
 
     }
 
+    /**
+     * Model viewing the Stream within a selectable timespan.
+     * @param int $streamId
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function view($streamId)
     {
         Util::checkLogin();
@@ -55,6 +68,10 @@ class Data
         getTemplate()->display('layout.php', $params);
     }
 
+    /**
+     * Model viewing List of all Streams a user has access to.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function viewList()
     {
         Util::checkLogin();
@@ -81,6 +98,10 @@ class Data
     }
 
 
+    /**
+     * Model adding a new Stream
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function addStream()
     {
         Util::checkLogin();
@@ -104,6 +125,11 @@ class Data
         return;
     }
 
+    /**
+     * Model deleting the stream
+     * @param int $stream
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function deleteStream($stream)
     {
         Util::checkLogin();

@@ -3,30 +3,32 @@
 include("./model/datastore.php");
 
 
+/**
+ * Class Api
+ *
+ * Containing most of the supportive functionality for the API.
+ */
 class Api
 {
 
     /**
-     * @author A. Radsziwill radsziwill@stud.tu-darmstadt.de
-     * @return string the Version of this API
+     * API to return the current Version.
+     * @return string $version the Version of this API
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function getVersion()
     {
         //header($_SERVER["SERVER_PROTOCOL"]." 418 I’m a teapot");
-        return array("version" => "0.1");
+        return array("version" => "0.1.0");
     }
 
     /**
-     * @author Martin Zittel <martin.zittel@gmail.com>
+     * Preprocessing to implement the CORS Headers.
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function preprocessing()
     {
         // TODO do some DoS countermeasures, and prevent token Brute-Forcing
-
-        // (store hashed IP).
-        // esp. for:
-        // * addUser
-        // * login (and all the rest API Calls that require to own a valid token)
 
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: x-requested-with, Content-Type");
@@ -45,18 +47,20 @@ class Api
     }
 
 
-    static public function test($foo, $bar)
-    {
-        return array($foo, $bar);
-    }
-
-
+    /**
+     * Shorthand for exiting with a 201 Created Statuscode.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function created()
     {
         header($_SERVER["SERVER_PROTOCOL"] . " 201 Created");
         exit;
     }
 
+    /**
+     * Shorthand for exiting with a 400 Bad Request Statuscode.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function failure()
     {
         header($_SERVER["SERVER_PROTOCOL"] . " 400 Bad Request");
@@ -65,12 +69,12 @@ class Api
 
     /**
      * If the client is authenticated the return value will contain the uid.
-     * If not authenticated with given read/write permissions it exits with 403.
-     * Auth-Token: token
-     * in the HTTP Header.
-     * @params read if read rights on the streams are needed
-     * @params write if write rights on the streams are needed
-     * @return userId (or exits with 403)
+     * If the request is not authenticated with needed read/write permissions it exits with a 403.
+     * For the Authentication a valid Header Auth-Token or a valid Session Cookie is needed.
+     * @params bool read if read rights on the streams are needed
+     * @params bool write if write rights on the streams are needed
+     * @return int userId (or exits with 403)
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function authenticate($read = true, $write = true)
     {
@@ -91,6 +95,11 @@ class Api
 
     }
 
+    /**
+     * Checks the if a valid Session exists.
+     * @return int userId (or -1)
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function authenticateViaSession()
     {
 
@@ -100,6 +109,13 @@ class Api
         return -1;
     }
 
+    /**
+     * Checks the if a valid Token with the needed rights exists.
+     * @param bool $read right
+     * @param bool $write right
+     * @return int userId (or -1)
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function authenticateViaHeaderToken($read, $write)
     {
 
@@ -144,40 +160,23 @@ class Api
     }
 
     /**
-     * should use /dev/urandom in productive environment
+     * generate random lowercase characters (of given length)
+     * @param int $chars length of the random array
+     * @return string randomCharacters
+     * @author Martin Philipp <mail@martin-philipp.de>
      */
     static public function randomString($chars = 8)
     {
         // TODO check randomness !
+        // maybe use /dev/urandom in productive environment
+
         $letters = 'abcefghijklmnopqrstuvwxyz';
         return substr(str_shuffle($letters), 0, $chars);
     }
 
     /**
-     * should use /dev/urandom in productive environment
-     */
-    static public function generateToken($userId, $leaseLength = 1800)
-    {
-
-        $token = hash("sha512", Api::randomString(20));
-
-        $date = new DateTime("now");
-        $date->add(new DateInterval('PT30M'));
-
-        $params = array();
-        $params['userId'] = $userId;
-        $params['hash'] = $token;
-        $params['validUntil'] = $date->format('Y-m-d H:i:s');
-        $params['rights'] = "1";
-
-        $userId = getDatabase()->execute('INSERT INTO tokens(userId, hash, validUntil, rights)
-			VALUES(:userId, :hash, :validUntil, :rights)', $params);
-
-        return $token;
-    }
-
-    /**
      * validates the JSON given in HTTP-Body against scheme file
+     * @param string $jsonSchemeFile path to the JSON Scheme File
      * @return JSON-Object or NULL
      */
     static public function getValidJson($jsonSchemeFile)
@@ -201,6 +200,10 @@ class Api
 
     }
 
+    /**
+     * Parse the HTTP Request Headers as Array.
+     * @return array $headers containing the HTTP Request Headers
+     */
     static public function parseRequestHeaders()
     {
         $headers = array();

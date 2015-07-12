@@ -9,6 +9,11 @@
 Class Register
 {
 
+    /**
+     * Model generating the Register Page with an optional value for a fail message.
+     * @param bool $error
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function generateRegisterPage($error = false)
     {
         $params = Util::initNavigation('./register');
@@ -17,11 +22,18 @@ Class Register
         getTemplate()->display('layout.php', $params);
     }
 
+    /**
+     *
+     */
     public static function getRegisterPageWithFail()
     {
         Self::generateRegisterPage(true);
     }
 
+    /**
+     * Model creating the new User in the DB and redirecting to fail / success pages.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function sendIn()
     {
 
@@ -30,6 +42,14 @@ Class Register
             $_POST['inputPassword'] == $_POST['inputPassword2'] &&
             strlen($_POST['inputPassword']) > 5
         ) {
+
+            $sql = 'SELECT uid FROM users WHERE mail=:mail';
+            $mail = getDatabase()->one($sql, array(':mail' => $_POST['mail']));
+
+            if (!empty($mail['uid'])) {
+                getRoute()->redirect(getConfig()->get('global')->basepath . 'register/fail', null, true);
+                return;
+            }
 
             $password = hash("sha512", getConfig()->get('global')->salt . $_POST['inputPassword']);
 
@@ -53,6 +73,10 @@ Class Register
         getRoute()->redirect(getConfig()->get('global')->basepath . 'register/success', null, true);
     }
 
+    /**
+     * Model generating the Register success page.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function registerSuccess()
     {
         $params = Util::initNavigation('./');
@@ -61,6 +85,11 @@ Class Register
         getTemplate()->display('layout.php', $params);
     }
 
+    /**
+     * verifying the verify code and viewing a success page.
+     * @param string $code the verify code the user got by mail.
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     public static function verify($code)
     {
 
@@ -83,6 +112,15 @@ Class Register
     }
 
 
+    /**
+     * Send a register Mail to the user with a verify code to ensure the mail Address is correct.
+     * @param string $mailRegistree user mail address.
+     * @param string $verifyCode the verfy code to be mailed.
+     * @return bool
+     * @throws Exception
+     * @throws phpmailerException
+     * @author Martin Philipp <mail@martin-philipp.de>
+     */
     static public function registerMail($mailRegistree, $verifyCode)
     {
 

@@ -1,6 +1,6 @@
 <?php
 
-
+$sid = 1;
 
 // Load Epiphany
 include_once "./lib/epiphany/Epi.php";
@@ -32,7 +32,7 @@ for ($i = 0; $i < 100; $i++) {
     $value = sin((pi() * $i * 2) / 100);
     print($time . " " . $value . "\n");
 
-    $userId = getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(1, :val, :loggedTime)', array(':loggedTime' => $time, ':val' => $value));
+    $userId = getDatabase()->execute('INSERT INTO store(sid, val, loggedTime) VALUES(:sid, :val, :loggedTime)', array(':sid' => $sid, ':loggedTime' => $time, ':val' => $value));
 
     if ($i == 100) {
         $i = 0;
